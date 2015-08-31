@@ -5,12 +5,21 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.firebase.client.Firebase;
+
 public class MainActivity extends AppCompatActivity {
 
+    private Firebase mFirebaseRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //setting up Firebase context
+        Firebase.setAndroidContext(this);
+
+        //connection to root of our database
+        mFirebaseRef = new Firebase("https://gdg-firebase-codelab.firebaseio.com/");
     }
 
     @Override
