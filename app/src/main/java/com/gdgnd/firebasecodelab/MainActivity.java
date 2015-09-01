@@ -6,6 +6,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.firebase.client.Firebase;
 
@@ -15,7 +17,10 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private Firebase mFirebaseRef;
+    private Firebase mMessageRef;
+    private FirebaseListAdapter<Message> mListAdapter;
     EditText mEditText;
+    ListView mListView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,18 +31,24 @@ public class MainActivity extends AppCompatActivity {
 
         //connection to root of our database
         mFirebaseRef = new Firebase("https://gdg-firebase-codelab.firebaseio.com/");
+        mMessageRef = mFirebaseRef.child("messages");// connection to message object
 
         mEditText = (EditText)this.findViewById(R.id.message_text);
+        mListView = (ListView)this.findViewById(R.id.listView);
 
+        mListAdapter = new FirebaseListAdapter<Message>(mMessageRef,Message.class,R.layout.message_row,this) {
+            @Override
+            protected void populateView(View v, Message model) {
+                ((TextView)v.findViewById(R.id.username_text_view)).setText(model.getName());
+                ((TextView)v.findViewById(R.id.message_text_view)).setText(model.getMessage());
+            }
+        };
+        mListView.setAdapter(mListAdapter);
     }
 
     public void onSendButtonClick(View view){
         String message = mEditText.getEditableText().toString();//message to be sent
-        Firebase messageRef = mFirebaseRef.child("messages");// connection to message object
-        Map<String, String> values = new HashMap<>();
-        values.put("name","foo");
-        values.put("message",message);
-        messageRef.push().setValue(values);
+        mMessageRef.push().setValue(new Message("foo",message));
         mEditText.setText("");
     }
 
