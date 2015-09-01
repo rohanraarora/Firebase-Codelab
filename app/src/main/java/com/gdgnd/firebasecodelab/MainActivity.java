@@ -4,12 +4,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 
 import com.firebase.client.Firebase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private Firebase mFirebaseRef;
+    EditText mEditText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +26,21 @@ public class MainActivity extends AppCompatActivity {
 
         //connection to root of our database
         mFirebaseRef = new Firebase("https://gdg-firebase-codelab.firebaseio.com/");
+
+        mEditText = (EditText)this.findViewById(R.id.message_text);
+
     }
+
+    public void onSendButtonClick(View view){
+        String message = mEditText.getEditableText().toString();//message to be sent
+        Firebase messageRef = mFirebaseRef.child("messages");// connection to message object
+        Map<String, String> values = new HashMap<>();
+        values.put("name","foo");
+        values.put("message",message);
+        messageRef.push().setValue(values);
+        mEditText.setText("");
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
